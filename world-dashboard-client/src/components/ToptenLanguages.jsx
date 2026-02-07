@@ -1,39 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import { getTop10Languages } from '../API/api'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const ToptenLanguages = () => {
-  const [topTL, settopTL] = useState([])
+  const [languages, setLanguages] = useState([]);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const fetchToptL = async () => {
-      const response = await getTop10Languages()
-      settopTL(response)
-    }
-    fetchToptL()
-  }, [])
+    axios
+      .get(`${API}/api/top-languages`)
+      .then((res) => setLanguages(res.data))
+      .catch((err) => console.error("Error fetching languages:", err));
+  }, []);
 
   return (
-    <div style={{ margin: '40px 0' }}>
-      <h3>Top 10 Languages By Country Count</h3>
-
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          data={topTL}
-          margin={{
-            top: 20, right: 30, left: 0, bottom: 5
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="Language" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="CountryCount" fill="#82ca9d" />
-        </BarChart>
-      </ResponsiveContainer>
+    <div>
+      <h2>Top 10 Languages</h2>
+      {languages.length === 0
+        ? "Loading..."
+        : languages.map((lang, i) => <p key={i}>{lang.language} — {lang.count}</p>)}
     </div>
-  )
-}
+  );
+};
 
-export default ToptenLanguages
+export default ToptenLanguages;
