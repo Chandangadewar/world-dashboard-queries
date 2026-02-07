@@ -1,39 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import { getTotalPopulationByContinent } from '../API/api'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const TotalPopulationByContinent = () => {
-  const [totalPbC, settotalPbc] = useState([])
+  const [data, setData] = useState([]);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const fetchTotalPbyC = async () => {
-      const response = await getTotalPopulationByContinent()
-      settotalPbc(response)
-    }
-    fetchTotalPbyC()
-  }, [])
+    axios
+      .get(`${API}/api/population-by-continent`)
+      .then((res) => setData(res.data))
+      .catch((err) => console.error("Error fetching continent data:", err));
+  }, []);
 
   return (
-    <div style={{ margin: '40px 0' }}>
-      <h3>Total Population By Continent</h3>
-
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={totalPbC}
-          margin={{
-            top: 20, right: 30, left: 0, bottom: 5
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="Continent" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="CPopulation" stroke="#8884d8" activeDot={{ r: 8 }} />
-        </LineChart>
-      </ResponsiveContainer>
+    <div>
+      <h2>Total Population by Continent</h2>
+      {data.length === 0
+        ? "Loading..."
+        : data.map((c) => (
+            <p key={c.continent}>
+              {c.continent}: {c.totalPopulation.toLocaleString()}
+            </p>
+          ))}
     </div>
-  )
-}
+  );
+};
 
-export default TotalPopulationByContinent
+export default TotalPopulationByContinent;
