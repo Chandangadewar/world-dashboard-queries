@@ -1,25 +1,23 @@
-import React, { useEffect , useState } from 'react'
-import {totalPopulation} from '../API/api'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const TotalPopulation = () => {
-    const[totalPop , setTotalPop] = useState([]);
-    
-    const fetchapi = async()=>{
-      const totalPop = await totalPopulation();
-      console.log(totalPop);
-      setTotalPop(totalPop)
-      
-    }
-    useEffect (()=>{
-          fetchapi()
-    
+  const [population, setPopulation] = useState(null);
+  const API = import.meta.env.VITE_API_URL;
 
-    } , [])
+  useEffect(() => {
+    axios
+      .get(`${API}/api/total-population`)
+      .then((res) => setPopulation(res.data.totalPopulation))
+      .catch((err) => console.error("Error fetching total population:", err));
+  }, []);
+
   return (
     <div>
-      <h2 style={{color : '#638fd6'}}>TotalPopulation : {totalPop} </h2>
-      </div>
-  )
-}
+      <h2>Total Population</h2>
+      <p>{population !== null ? population.toLocaleString() : "Loading..."}</p>
+    </div>
+  );
+};
 
-export default TotalPopulation
+export default TotalPopulation;
