@@ -1,38 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { getTop10PopulatedCountries } from '../API/api';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const TopTenPopulatedCountries = () => {
-  const [top10C, setTopC] = useState([]);
+  const [data, setData] = useState([]);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const fetchToptenPc = async () => {
-      const response = await getTop10PopulatedCountries();
-      setTopC(response);
-    };
-    fetchToptenPc();
+    axios
+      .get(`${API}/api/top-populated`)
+      .then((res) => setData(res.data))
+      .catch((err) => console.error("Error fetching top populated countries:", err));
   }, []);
 
   return (
-    <div style={{ width: '90%', height: 400, margin: 'auto' }}>
-      <h3 style={{ textAlign: 'center' }}>Top 10 Populated Countries</h3>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={top10C}
-          margin={{
-            top: 10, right: 20, left: 10, bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="Name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="Population" fill="#8884d8" />
-        </BarChart>
-      </ResponsiveContainer>
+    <div>
+      <h2>Top 10 Populated Countries</h2>
+      {data.length === 0 ? (
+        <p>Loading...</p>
+      ) : (
+        <ul>
+          {data.map((c, i) => (
+            <li key={i}>{c.name} — {c.population.toLocaleString()}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
