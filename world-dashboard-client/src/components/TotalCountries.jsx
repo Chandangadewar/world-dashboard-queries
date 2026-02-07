@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import { totalCountries } from '../API/api'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const TotalCountries = () => {
-const [toCount , setToCount] = useState([]);
+  const [count, setCount] = useState(null);
+  const API = import.meta.env.VITE_API_URL;
 
-useEffect(()=>{
-   const tC = totalCountries();
-   setToCount(tC)
-    
-} ,[])
+  useEffect(() => {
+    axios
+      .get(`${API}/api/total-countries`)
+      .then((res) => setCount(res.data.totalCountries))
+      .catch((err) => console.error("Error fetching total countries:", err));
+  }, []);
 
   return (
     <div>
-       <h1 style={{color : '#ce63d6'}}> TotalCountries : {toCount} </h1>
+      <h2>Total Countries</h2>
+      <p>{count !== null ? count : "Loading..."}</p>
     </div>
-  )
-}
+  );
+};
 
-export default TotalCountries
+export default TotalCountries;
